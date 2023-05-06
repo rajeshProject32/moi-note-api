@@ -1,0 +1,6 @@
+ENVIRONMENT=QA
+PORT=4455
+
+# CloudWatch
+LOG_GROUP_NAME=moiNoteApis
+LOG_STREAM_NAME=moiNoteApisQat
