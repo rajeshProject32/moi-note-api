@@ -13,11 +13,22 @@ export class User extends BaseEntity {
   @Prop({ default: '' })
   lastName: string;
 
-  @Prop({ sparse: true })
+  @Prop()
   username: string;
 
-  @Prop({ sparse: true })
+  @Prop()
   password: string;
+
+  @Prop({ type: Object })
+  address: {
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    postalCode: string;
+  };
+
+  @Prop()
+  accessType: string;
 
   @Prop()
   termsAndCondChecked: boolean;

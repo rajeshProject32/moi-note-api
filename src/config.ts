@@ -10,3 +10,6 @@ export const joiConfig = {
   abortEarly: false,
   allowUnknown: true,
 };
+export const jwtSecretKey = {
+  secretKey: process.env.JWT_SECRET,
+};

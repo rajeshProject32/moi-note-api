@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { GlobalResponseDto } from 'src/dto/globalResponse.dto';
-import { UserContextService } from './userContext.service';
+import { UserContextService } from 'src/services/userContext.service';
 
 @Controller('userContext')
 export class UserContextController {
