@@ -4,8 +4,8 @@ import { User, UserSchema } from 'src/entity/user.entity';
 import { VerifyConsumerAuthTokenMiddleware } from 'src/middleware/verifyConsumerAuthToken.middleware';
 import { ConsumerAuthController } from './auth/consumerAuth.controller';
 import { ConsumerAuthService } from './auth/consumerAuth.service';
-import { SubscriptionService } from './subscription/subscription.service';
-import { SubscriptionController } from './subscription/subscription.controller';
+import { EventService } from './subscription/event.service';
+import { EventController } from './subscription/event.controller';
 import {
   Subscription,
   SubscriptionSchema,
@@ -15,10 +15,10 @@ import {
   CommonPasswordSchema,
 } from 'src/entity/commonPassword.entity';
 import { UserContextController } from './userContext/userContext.controller';
-import { UserContextService } from './userContext/userContext.service';
 import { CommonPasswordService } from 'src/services/shared/commonPassword.service';
 import { UserService } from 'src/services/user.service';
 import { UserContext, UserContextSchema } from 'src/entity/userContext.entity';
+import { UserContextService } from 'src/services/userContext.service';
 
 @Module({
   imports: [
@@ -32,14 +32,10 @@ import { UserContext, UserContextSchema } from 'src/entity/userContext.entity';
       { name: UserContext.name, schema: UserContextSchema },
     ]),
   ],
-  controllers: [
-    ConsumerAuthController,
-    SubscriptionController,
-    UserContextController,
-  ],
+  controllers: [ConsumerAuthController, EventController, UserContextController],
   providers: [
     ConsumerAuthService,
-    SubscriptionService,
+    EventService,
     UserContextService,
     CommonPasswordService,
     UserService,

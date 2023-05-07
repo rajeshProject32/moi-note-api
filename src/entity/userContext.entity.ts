@@ -11,25 +11,24 @@ export class UserContext extends BaseEntity {
   @Prop({ index: true })
   userId: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ index: true })
-  userCustomerInfoId: mongoose.Schema.Types.ObjectId;
-
-  @Prop({ default: [] })
-  featureIdCodes: string[];
+  @Prop({
+    type: [
+      {
+        name: String,
+        city: String,
+        date: String,
+      },
+    ],
+    default: [],
+  })
+  events: {
+    name: string;
+    city: string;
+    date: string;
+  }[];
 
   @Prop({ default: StatusEnum.notVerified })
   status: string;
-
-  @Prop({
-    type: Object,
-    default: {
-      isSigned: false,
-    },
-  })
-  creditAgreement: {
-    isSigned: boolean;
-    signedDate: Date;
-  };
 }
 
 export const UserContextSchema = SchemaFactory.createForClass(UserContext);

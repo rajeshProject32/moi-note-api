@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 import { User, UserEntity } from 'src/entity/user.entity';
 
 @Injectable()
@@ -17,5 +17,10 @@ export class UserService {
         'Username is already existing, please enter a unique username',
       );
     }
+  }
+
+  async findUser(userId: Schema.Types.ObjectId) {
+    const userData = await this._userDb.findOne({ userId: userId });
+    return userData;
   }
 }

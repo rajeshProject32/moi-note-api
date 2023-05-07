@@ -6,23 +6,32 @@ import {
   Param,
   Post,
   Body,
+  Req,
 } from '@nestjs/common';
 import { Response } from 'express';
 import mongoose from 'mongoose';
 import { GlobalResponseDto } from 'src/dto/globalResponse.dto';
 import { ConsumerAuthService } from './consumerAuth.service';
-import { SignupRequestDto } from 'src/dto/auth.request.dto';
+import {
+  AuthRequestDto,
+  EventDetailsDto,
+  SignupRequestDto,
+} from 'src/dto/auth.request.dto';
 import { AuthValidator } from 'src/validator/auth.validator';
+import { MoiConsumerRequest } from 'src/middleware/verifyConsumerAuthToken.middleware';
 
 @Controller('auth')
 export class ConsumerAuthController {
   constructor(private _consumerAuthService: ConsumerAuthService) {}
 
   @Post('login')
-  async login(@Res() response: Response) {
+  async login(
+    @Res() response: Response,
+    @Body() authRequestDto: AuthRequestDto,
+  ) {
     // validate auth login
-
-    const token = await this._consumerAuthService.login();
+    await AuthValidator.validateLogin(authRequestDto);
+    const token = await this._consumerAuthService.login(authRequestDto);
 
     return response
       .status(HttpStatus.OK)

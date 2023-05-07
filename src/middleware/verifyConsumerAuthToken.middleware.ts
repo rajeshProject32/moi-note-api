@@ -6,25 +6,24 @@ import { Response, NextFunction } from 'express';
 import { GlobalResponseDto } from 'src/dto/globalResponse.dto';
 import { StatusEnum } from 'src/enum/status.enum';
 import { User, UserEntity } from 'src/entity/user.entity';
-import { Model } from 'mongoose';
-import { SubscriptionService } from 'src/controllers/consumer/subscription/subscription.service';
+import { Model, Schema } from 'mongoose';
+import { jwtSecretKey } from 'src/config';
 
 @Injectable()
 export class VerifyConsumerAuthTokenMiddleware implements NestMiddleware {
   constructor(
     @InjectModel(User.name)
     private _userDb: Model<UserEntity>,
-    private _subscriptionService: SubscriptionService,
   ) {}
 
   async use(request: Request, response: Response, next: NextFunction) {
     const urls = ['consumer/auth', 'consumer/forgotPwd'];
     const url = (request as any).originalUrl;
-    if (url.includes(urls[0])) {
+    if (url.includes(urls[0] || urls[1])) {
       next();
       return;
     }
-    const jwtTokenKey = process.env.JWT_SECRET;
+    const jwtTokenKey = jwtSecretKey.secretKey;
     const token = request.headers['authorization'];
     if (!token || !jwtTokenKey) {
       return response
@@ -38,8 +37,8 @@ export class VerifyConsumerAuthTokenMiddleware implements NestMiddleware {
           ),
         );
     } else if (jwt.verify(token, jwtTokenKey)) {
-      const customerid = request.headers['customerid'];
-      if (!customerid) {
+      const userid = request.headers['userid'];
+      if (!userid) {
         return response
           .status(HttpStatus.BAD_REQUEST)
           .json(
@@ -54,10 +53,10 @@ export class VerifyConsumerAuthTokenMiddleware implements NestMiddleware {
       const decoded: any = jwtDecode(token);
       if (decoded.user) {
         request['user'] = decoded.user;
-        request['user'].userId = decoded.user._id;
-        if (customerid) {
+        request['user'].userId = decoded.user.findUser._id;
+        if (userid) {
           const userCustomerInfoData = await this._userDb.findOne({
-            _id: decoded.user._id,
+            _id: decoded.user.findUser._id,
           });
 
           if (
@@ -75,11 +74,6 @@ export class VerifyConsumerAuthTokenMiddleware implements NestMiddleware {
                 ),
               );
           }
-
-          await this._subscriptionService.checkForActiveSubscription(
-            userCustomerInfoData._id,
-            true,
-          );
           next();
           return;
         }
@@ -107,4 +101,20 @@ export class VerifyConsumerAuthTokenMiddleware implements NestMiddleware {
         );
     }
   }
+}
+export interface MoiConsumerRequest extends Request {
+  user: {
+    userId: Schema.Types.ObjectId;
+    identifier: string;
+    address: {
+      addressLine1: string;
+      addressLine2: string;
+      city: string;
+      postalCode: string;
+    };
+    accessType: string;
+    userContextId: Schema.Types.ObjectId;
+    firstName: string;
+    lastName: string;
+  };
 }
